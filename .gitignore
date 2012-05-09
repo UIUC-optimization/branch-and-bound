@@ -1,0 +1,25 @@
+# Ignore common code files
+*.a
+*.so
+*.d
+*.o
+*.debug
+gmon.out
+*_d
+
+# Ignore common LaTeX files
+*.pdf
+*.log
+*.aux
+*.bbl
+*.blg
+*.bak
+*.swp
+*.toc
+*.lof
+*~
+
+# Miscellaneous
+.svn
+
+# Put your stuff here
