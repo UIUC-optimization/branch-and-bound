@@ -241,36 +241,39 @@ State *CBFSTree::getNextStateFromCurLevel()
 
 void CBFSTree::saveStateForExploration(State *s)
 {
-    int level = (*s).getDepth();
+    int level = s->getDepth();
     // Check to see if we need to add new level priority queues to store state
-    while (unexploredStates.size() <= level) {
+    while (unexploredStates.size() <= level) 
         unexploredStates.push_back(new state_priority_queue());
-    }
 
     // Now insert state into the appropriate priority queue, first checking if 
     // the level was empty before the insert operation
-    bool wasPreviouslyEmpty = (*(unexploredStates[level])).empty();
-    (*(unexploredStates[level])).push(s);
+    bool wasPreviouslyEmpty = (unexploredStates[level])->empty();
+    (unexploredStates[level])->push(s);
 
     // Now check to see if we need to add the priority queue to the list of 
     // nonempty level state priority queues (may preempt all queues in list)
-    if (wasPreviouslyEmpty) {
-        if (level == lastLevelExplored) {
+    if (wasPreviouslyEmpty) 
+	{
+        if (level == lastLevelExplored) 
+		{
             // We're trying to re-add a state that was just explored, so we 
             // want this level's SPQ to be placed at the end of the list
             nonEmptyLevelSPQs.push_back(unexploredStates[level]);
             return;
         } // Else we need to do a bit more work
 
-        bool isPrevLevelEmpty = 
-            (level > 0) ? (*(unexploredStates[level - 1])).empty() : true;
+        bool isPrevLevelEmpty = (level > 0) ? (unexploredStates[level - 1])->empty() : true;
         if ((selectionMethod != K_BEST_AT_LEVEL) || (isPrevLevelEmpty) ||  
-            (numExploredAtCurLevel >= levelThreshold(level - 1))) {
+            (numExploredAtCurLevel >= levelThreshold(level - 1))) 
+		{
             // Simply pre-empt the rest of the stuff in the queue if we're 
             // using normal selections, or if the previous level is empty or 
             // if we've explored enough at that level
             nonEmptyLevelSPQs.push_front(unexploredStates[level]);
-        } else {
+        } 
+		else 
+		{
             // Otherwise previous level is still sitting at the front of the 
             // non-empty level SPQ's, so we need to do some reordering.
             state_priority_queue *prevLevelSPQ = nonEmptyLevelSPQs.front();
