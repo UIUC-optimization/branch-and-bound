@@ -65,15 +65,21 @@ State *CBFSTree::getNextState()
 
 State *CBFSTree::getNextStateStandard()
 {
-    state_priority_queue *nextLevelSPQ = nonEmptyLevelSPQs.front();
+    state_priority_queue* nextLevelSPQ = nonEmptyLevelSPQs.front();
     nonEmptyLevelSPQs.pop_front();
 
-    State *nextState = (*nextLevelSPQ).top();
-    (*nextLevelSPQ).pop();
+    State* nextState = nextLevelSPQ->top();
+    nextLevelSPQ->pop();
 
-    while (nextState->isDominated()) {
-        if ((*nextLevelSPQ).empty()) {
-            if (nonEmptyLevelSPQs.empty()) {
+	//printf("Exploring next state at level %d with lower bound %0.9f\n", nextState->getDepth(), -nextState->getPriority());
+	//nextState->print();
+
+    while (nextState->isDominated()) 
+	{
+        if ((*nextLevelSPQ).empty()) 
+		{
+            if (nonEmptyLevelSPQs.empty()) 
+			{
                 // No new states to explore except current dominated one, 
                 // so return it to tree's exploreNextState function for 
                 // proper termination
