@@ -197,7 +197,7 @@ void BTree::processState(State* s, bool isRoot)
     // Else s is not prunable yet, so compute priority and store in the tree.
     // Store non-terminal, non-prunable state in the appropriate dominance 
     // class, creating a new class if none currently exists for it.
-    s->computePriority();
+    //s->computePriority();
     if (retainStates) {
         auto domClassPos = domClasses.find(s->getDomClassID());
         if (domClassPos == domClasses.end()) {

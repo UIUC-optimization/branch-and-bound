@@ -25,7 +25,6 @@ const int K_BEST_AT_LEVEL = 2;
 class State;
 class BTree;
 struct TreeStats;
-class LevelSPQ;
 
 // Used for tracking search statistics
 struct CBFSTreeStats : public TreeStats

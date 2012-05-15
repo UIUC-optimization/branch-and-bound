@@ -29,7 +29,6 @@ using std::string;
 #define DFS_ALG 0x02
 #define BFS_ALG 0x04
 #define BrFS_ALG 0x08
-#define CDBFS_ALG 0x10
 #define ALL_ALG 0xFF
 
 // Global constants
@@ -40,12 +39,12 @@ const double eps = 10e-05;
 
 // Forward Declarations
 class State;
-class SortStatePriority;
+struct StateComparator;
+//class SortStatePriority;
 
 // Typedef's for various data structures
-typedef list<State *> DomClass;
-typedef priority_queue<State *, vector<State *>, SortStatePriority> 
-    state_priority_queue;
+typedef list<State*> DomClass;
+typedef priority_queue<State*, vector<State*>, StateComparator> state_priority_queue;
 typedef unordered_map<int, DomClass *> dominance_class_map;
 
 // Used for tracking search statistics

@@ -27,7 +27,7 @@ class State
 		objValue(0.0), 
         lowerBound(-inf), 
 		upperBound(inf), 
-		priority(-lowerBound), 
+		//priority(-lowerBound), 
         dominated(false), 
 		processed(false) 
 	{}
@@ -37,7 +37,7 @@ class State
     // Abstract class functions that must be implemented by subclasses
     virtual void branch(BTree *bt) = 0;
     virtual void computeBounds(BTree *bt) = 0;
-    virtual void computePriority() = 0;
+    //virtual void computePriority() = 0;
     virtual void assessDominance(State *otherState) = 0;
     virtual bool isTerminalState() = 0;
     virtual void applyFinalPruningTests(BTree *bt) = 0;
@@ -51,9 +51,11 @@ class State
     double getObjValue() const;
     double getLB() const;
     double getUB() const;
-    double getPriority() const;
+    //double getPriority() const;
     bool isDominated() const;
     bool wasProcessed() const;
+
+	virtual bool operator<(const State& other) = 0;
 
   protected:
     // Variables
@@ -62,12 +64,14 @@ class State
     double objValue;
     double lowerBound;
     double upperBound;
-    double priority;
+    //double priority;
     bool dominated;
     bool processed;
+};
 
-  private:
-    // Nothing
+struct StateComparator
+{
+	bool operator()(State* const& x, State* const& y) { return *x < *y; }
 };
 
 /*****************************************************************************/
@@ -98,10 +102,10 @@ inline double State::getUB() const
     return upperBound; 
 }
 
-inline double State::getPriority() const 
+/*inline double State::getPriority() const 
 { 
     return priority; 
-}
+}*/
 
 inline bool State::isDominated() const 
 { 
@@ -115,7 +119,7 @@ inline bool State::wasProcessed() const
 
 inline void State::print() const 
 {
-    printf("D:=%4d, Obj:=%10.2f, Pri:=%10.2f ", depth, objValue, priority);
+    printf("D:=%4d, Obj:=%10.2f ", depth, objValue);
     if (lowerBound > -std::numeric_limits<double>::max()) {
         printf("< %10.2f |", lowerBound);
     } else {
@@ -132,7 +136,7 @@ inline void State::print() const
 /*****************************************************************************/
 /* Class that provides functionality for sorting states                      */
 /*****************************************************************************/
-class SortStatePriority
+/*class SortStatePriority
 {
   public:
     // Returns true if s1 < s2 in the total ordering; since priority queue is 
@@ -141,7 +145,7 @@ class SortStatePriority
     {
         return (s1->getPriority() < s2->getPriority());
     }
-};
+};*/
 
 #endif // STATE_H
 

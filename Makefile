@@ -5,7 +5,7 @@
 #    make sure the directory exists)
 # 3. Change $(EXEC) to be the name you want for your executable
 
-SRCS = bfstree.cpp brfstree.cpp btree.cpp cbfstree.cpp cdbfstree.cpp dfstree.cpp
+SRCS = bfstree.cpp brfstree.cpp btree.cpp cbfstree.cpp dfstree.cpp
 CFLAGS = 
 LDFLAGS = 
 
