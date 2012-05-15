@@ -71,9 +71,6 @@ State *CBFSTree::getNextStateStandard()
     State* nextState = nextLevelSPQ->top();
     nextLevelSPQ->pop();
 
-	//printf("Exploring next state at level %d with lower bound %0.9f\n", nextState->getDepth(), -nextState->getPriority());
-	//nextState->print();
-
     while (nextState->isDominated()) 
 	{
         if ((*nextLevelSPQ).empty()) 
