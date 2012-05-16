@@ -29,9 +29,13 @@ DFSTree::~DFSTree()
 	
 	// If states are not being retained in the dominance classes, we need 
 	// to make sure they're deleted from the tree prior to termination
-	while (!isEmpty()) {
-	   State *ns = getNextState();
-	   delete ns;
+	if (!retainStates)
+	{
+		while (!isEmpty()) 
+		{
+		   State *ns = getNextState();
+		   delete ns;
+		}
 	}
 }
 
