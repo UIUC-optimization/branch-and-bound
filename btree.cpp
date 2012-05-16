@@ -346,7 +346,7 @@ void BTree::saveBestState(State* s, bool isTreeNode)
             if (debug > 0)
                 printProgress(true);
         } 
-		else return;//false;
+		else return;
     } 
 	else if (((problemType == MIN) && (objVal < globalUpperBound - eps)) ||
                ((problemType == MAX) && (objVal > globalLowerBound + eps))) 
@@ -378,9 +378,6 @@ void BTree::saveBestState(State* s, bool isTreeNode)
             tStats->numOptimalHeuristicStatesProcessed = 1;
         }
 	}
-	else return;// false;
-
-//	return true;
 }
 
 
