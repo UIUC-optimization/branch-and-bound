@@ -117,6 +117,7 @@ class BTree
 	void setStartTime(double time) { tStats->totalTime = time; tStats->timeToOpt = time;}
 	void setGlobalLB(double lb) { globalLowerBound = lb; }
 	void setGlobalUB(double ub) { globalUpperBound = ub; }
+	void setStateComputesBounds(bool b) { stateComputesBounds = b; }
 
 	// Getters
     State* getOptSolution() { return bestState; }
@@ -144,6 +145,7 @@ class BTree
     bool useFinalTests;
 	bool findAllSolns;
 	int outputRate;
+	bool stateComputesBounds;
 
     // Termination options
     int nodeLimit; 

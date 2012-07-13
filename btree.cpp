@@ -30,6 +30,7 @@ BTree::BTree(int probType, bool isIntProb) :
 	useFinalTests(false),
 	findAllSolns(false),
 	outputRate(1000),
+	stateComputesBounds(false),
 	nodeLimit(0),
 	timeLimit(0.0),
 	stopAtFirstImprov(false),
@@ -172,7 +173,8 @@ void BTree::processState(State* s, bool isRoot)
     }
 
     // Else s is not dominated, so compute bounds and check pruning
-    s->computeBounds(this);
+	if (!stateComputesBounds)
+		s->computeBounds(this);
     if (stateExceedsBounds(s)) {
         ++tStats->statesPrunedByBoundsBeforeInsertion;
         delete s;
