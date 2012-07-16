@@ -7,6 +7,7 @@
 /*****************************************************************************/
 #include "state.h"
 #include "btree.h"
+#include "util.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -361,6 +362,12 @@ void BTree::saveBestState(State* s, bool isTreeNode)
             globalUpperBound = objVal;
         else // problemType == MAX
             globalLowerBound = objVal;
+
+		if (globalUpperBound < globalLowerBound)
+		{
+			throw ERROR << "globalUpperBound " << globalUpperBound << " is less than "
+				<< "globalLowerBound " << globalLowerBound;
+		}
 
         if (debug > 0) printProgress(true); 
 
