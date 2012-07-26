@@ -84,13 +84,16 @@ void BTree::explore()
         keepExploring &= 
             ((nodeLimit == 0 || tStats->statesExplored < nodeLimit) &&
              (timeLimit < eps || clock() - start < timeLimit) && 
-             (!stopAtFirstImprov || tStats->timesBestStateWasUpdated == 0));
+             (!stopAtFirstImprov || tStats->timesBestStateWasUpdated == 0) &
+			 (globalLowerBound < globalUpperBound));
     }
 
+	if (globalLowerBound == globalUpperBound)
+		printf("Bounds are equal; terminating.\n");
 
     if (debug > 0) {
         printf("* Finished *\n");
-        if (!isEmpty() || !finished) {
+        if ((globalLowerBound < globalUpperBound) && (!isEmpty() || !finished)) {
             printf("Failed to explore entire tree; cannot guarantee "
                    "optimality\n");
         }
