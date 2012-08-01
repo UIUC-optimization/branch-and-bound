@@ -62,7 +62,7 @@ BTree::~BTree()
 /*****************************************************************************/
 void BTree::explore()
 {
-	double start = clock();
+	runTimeStart = clock() - tStats->totalTime;
 	bool finished = true;
     while ((!isEmpty()) && (keepExploring)) 
 	{
@@ -83,7 +83,7 @@ void BTree::explore()
 		// Determine whether to keep exploring based on time / node limits
         keepExploring &= 
             ((nodeLimit == 0 || tStats->statesExplored < nodeLimit) &&
-             (timeLimit < eps || clock() - start < timeLimit) && 
+             (timeLimit < eps || clock() - runTimeStart < timeLimit) && 
              (!stopAtFirstImprov || tStats->timesBestStateWasUpdated == 0));
     }
 
@@ -158,6 +158,7 @@ void BTree::processState(State* s, bool isRoot)
     // If s is a terminal state, process it and return
     if (s->isTerminalState()) {
         processTerminalState(s);
+		if (isRoot) printf("root is terminal!\n");
         return;
     } 
 
@@ -444,7 +445,7 @@ void BTree::printProgress(bool newIncumbent) const
         printf("|        Inf >");
     }
     printf(" (%6.2fs) (TTB %6.2fs)\n", 
-            (tStats->totalTime) / CLOCKS_PER_SEC, 
+            (clock() - runTimeStart) / CLOCKS_PER_SEC, 
             (tStats->timeToOpt) / CLOCKS_PER_SEC);
     return;
 }
