@@ -137,6 +137,7 @@ class BTree
     State* bestState;
     bool keepExploring;
 	bool isOptIntegral;
+	double runTimeStart;
 
     // Parameters / Options
     int debug;
