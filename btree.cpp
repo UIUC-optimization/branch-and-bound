@@ -25,6 +25,10 @@ BTree::BTree(int probType, bool isIntProb) :
 	bestState(NULL),
 	keepExploring(true),
 	isOptIntegral(isIntProb),
+	nextNodeID(0),
+	nextEdgeID(0),
+	exploredStates(0),
+	tulipOutputFile(NULL),
 	debug(1),
 	useDom(false),
 	retainStates(true),
@@ -55,6 +59,8 @@ BTree::~BTree()
     } 
 	delete tStats;
 	delete bestState;
+	fprintf(tulipOutputFile, ")\n");
+	fclose(tulipOutputFile);
 }
 
 /*****************************************************************************/
@@ -112,6 +118,12 @@ void BTree::exploreNextState()
 {
     State* ns = getNextState();
 
+	if (tulipOutputFile)
+	{
+		fprintf(tulipOutputFile, "(property 0 string \"viewLabel\" ");
+		fprintf(tulipOutputFile, "(node %d \"%d\"))\n", ns->getID(), exploredStates++);
+	}
+
     if (stateIsPrunable(ns)) 
 	{
         if (!retainStates) delete ns;
@@ -133,10 +145,10 @@ void BTree::exploreNextState()
     // If we get to this point, we have no choice but to branch on the state. 
 //    printf("Exploring state: ");
 //    ns->print();
-    while (ns->getDepth() >= tStats->numExploredAtLevel.size()) 
+    while (ns->depth >= tStats->numExploredAtLevel.size()) 
         tStats->numExploredAtLevel.push_back(0);
 
-    tStats->numExploredAtLevel[ns->getDepth()]++;
+    tStats->numExploredAtLevel[ns->depth]++;
     ++tStats->statesExplored;
     ns->branch(this);
 
@@ -152,14 +164,23 @@ void BTree::exploreNextState()
 /*****************************************************************************/
 void BTree::processState(State* s, bool isRoot)
 {
-    while (s->getDepth() >= tStats->numIdentifiedAtLevel.size()) {
+	if (tulipOutputFile)
+	{
+		s->id = nextNodeID++;
+		fprintf(tulipOutputFile, "(nodes %d)\n", s->id);
+		if (s->parID != -1) 
+			fprintf(tulipOutputFile, "(edge %d %d %d)\n", nextEdgeID++, s->id, s->parID);
+		s->writeTulipOutput(tulipOutputFile);
+	}
+
+    while (s->depth >= tStats->numIdentifiedAtLevel.size()) 
         tStats->numIdentifiedAtLevel.push_back(0);
-    }
-    ++tStats->numIdentifiedAtLevel[s->getDepth()];
+    ++tStats->numIdentifiedAtLevel[s->depth];
     ++tStats->statesIdentified;
 
     // If s is a terminal state, process it and return
-    if (s->isTerminalState()) {
+    if (s->isTerminalState()) 
+	{
         processTerminalState(s);
 		if (isRoot) printf("root is terminal!\n");
         return;
@@ -168,9 +189,11 @@ void BTree::processState(State* s, bool isRoot)
 	if (saveNonTerm) saveBestState(s, true);
 
     // Else check s for dominance
-    if (useDom) {
+    if (useDom) 
+	{
         applyDominanceRules(s);
-        if (stateIsDominated(s)) {
+        if (stateIsDominated(s)) 
+		{
             ++tStats->statesPrunedByDomBeforeInsertion;
             delete s;
             return;
@@ -180,16 +203,19 @@ void BTree::processState(State* s, bool isRoot)
     // Else s is not dominated, so compute bounds and check pruning
 	if (!stateComputesBounds)
 		s->computeBounds(this);
-    if (stateExceedsBounds(s)) {
+
+    if (stateExceedsBounds(s)) 
+	{
         ++tStats->statesPrunedByBoundsBeforeInsertion;
         delete s;
         return;
-    } else if (isRoot) { // Update global bounds based on root's values
-        if (problemType == MIN) {
-            globalLowerBound = s->getLB();
-        } else { // problemType == MAX
-            globalUpperBound = s->getUB();
-        }
+    } 
+	
+	else if (isRoot) 
+	{ 
+		// Update global bounds based on root's values
+        if (problemType == MIN) globalLowerBound = s->getLB();
+        else /* problemType == MAX */ globalUpperBound = s->getUB();
 
 		// If at the root, the lower bound and upper bounds are equal, we know
 		// we're done; no need to explore the state
@@ -204,21 +230,20 @@ void BTree::processState(State* s, bool isRoot)
     // Else s is not prunable yet, so compute priority and store in the tree.
     // Store non-terminal, non-prunable state in the appropriate dominance 
     // class, creating a new class if none currently exists for it.
-    //s->computePriority();
-    if (retainStates) {
+    if (retainStates) 
+	{
         auto domClassPos = domClasses.find(s->getDomClassID());
-        if (domClassPos == domClasses.end()) {
-            DomClass *domClass = new DomClass();
-            (*domClass).push_back(s);
+        if (domClassPos == domClasses.end()) 
+		{
+            DomClass* domClass = new DomClass();
+            domClass->push_back(s);
             domClasses[s->getDomClassID()] = domClass;
-        } else {
-            domClassPos->second->push_back(s);
-        }
+        } else domClassPos->second->push_back(s);
     }
-    while (s->getDepth() >= tStats->numStoredAtLevel.size()) {
+
+    while (s->depth >= tStats->numStoredAtLevel.size()) 
         tStats->numStoredAtLevel.push_back(0);
-    }
-    ++tStats->numStoredAtLevel[s->getDepth()];
+    ++tStats->numStoredAtLevel[s->depth];
     ++tStats->statesStoredInTree;
     saveStateForExploration(s);
 
@@ -244,6 +269,26 @@ void BTree::resetBest()
 	tStats->timesBestStateWasUpdated = 0;
 }
 
+void BTree::setTulipOutputFile(const char* filename)
+{
+	if (!(tulipOutputFile = fopen(filename, "w")))
+		throw ERROR << "Could not open " << filename << " for writing.";
+
+	fprintf(tulipOutputFile, "(tlp \"2.3\"\n");
+	fprintf(tulipOutputFile, "(property 0 color \"viewColor\" ");
+	fprintf(tulipOutputFile, "(default \"(0,0,0,255)\" \"(0,0,0,255)\"))\n");
+	fprintf(tulipOutputFile, "(property 0 string \"schedule\" ");
+	fprintf(tulipOutputFile, "(default \"\" \"\"))\n");
+	fprintf(tulipOutputFile, "(property 0 bool \"delayed\" ");
+	fprintf(tulipOutputFile, "(default \"false\" \"false\"))\n");
+	fprintf(tulipOutputFile, "(property 0 string \"viewLabel\" ");
+	fprintf(tulipOutputFile, "(default \"0\" \"0\"))\n");
+	fprintf(tulipOutputFile, "(property 0 color \"viewLabelColor\" ");
+	fprintf(tulipOutputFile, "(default \"(255,255,255,255)\" \"(0,0,0,255)\"))\n");
+	fprintf(tulipOutputFile, "(property 0 int \"viewShape\" ");
+	fprintf(tulipOutputFile, "(default \"14\" \"4\"))\n");
+}
+
 void BTree::processTerminalState(State *s, bool isTreeNode)
 {
     if (isTreeNode) {
@@ -251,6 +296,12 @@ void BTree::processTerminalState(State *s, bool isTreeNode)
     } else {
         ++tStats->heuristicStatesProcessed;
     }
+
+	if (tulipOutputFile)
+	{
+		fprintf(tulipOutputFile, "(property 0 color \"viewColor\" ");
+		fprintf(tulipOutputFile, "(node %d \"(0, 255, 0, 255)\"))\n", s->id);
+	}
 
 	saveBestState(s, isTreeNode);
 	delete s;
@@ -297,36 +348,49 @@ bool BTree::stateIsPrunable(State *s)
 inline
 bool BTree::stateIsDominated(State *s)
 {
-    if (s->isDominated()) {
-        if (debug >= 3) {
-            printf("State at depth %d is dominated\n", s->getDepth());
-        }
+    if (s->isDominated())
+	{
+        if (debug >= 3) 
+            printf("State at depth %d is dominated\n", s->depth);
+
+		if (tulipOutputFile)
+		{
+			fprintf(tulipOutputFile, "(property 0 color \"viewColor\" ");
+			fprintf(tulipOutputFile, "(node %d \"(255, 0, 255, 255)\"))\n", s->id);
+		}
         return true;
-    } else {
-        return false;
-    }
+    } 
+
+	return false;
 }
 
 inline
 bool BTree::stateExceedsBounds(State *s)
 {
     if (((problemType == MIN) && (s->getLB() >= globalUpperBound - eps)) ||
-        ((problemType == MAX) && (s->getUB() <= globalLowerBound + eps))) {
+        ((problemType == MAX) && (s->getUB() <= globalLowerBound + eps))) 
+	{
         // NOTE: checks for pruning should be >= and <=, respectively. 
         // Changing them to > and < allows us to identify all optimal 
         // solutions, but slows the search process down. 
-        if (debug >= 3) {
-            printf("State at depth %d exceeds bounds: ", s->getDepth());
-            if (problemType == MIN) {
+        if (debug >= 3) 
+		{
+            printf("State at depth %d exceeds bounds: ", s->depth);
+            if (problemType == MIN) 
                 printf("LB(%.2f) > GUB(%.2f)\n", s->getLB(), globalUpperBound);
-            } else { // problemType == MAX
+            else // problemType == MAX
                 printf("UB(%.2f) < GLB(%.2f)\n", s->getUB(), globalLowerBound);
-            }
         }
+
+		if (tulipOutputFile)
+		{
+			fprintf(tulipOutputFile, "(property 0 color \"viewColor\" ");
+			fprintf(tulipOutputFile, "(node %d \"(255, 0, 0, 255)\"))\n", s->id);
+		}
         return true;
-    } else {
-        return false;
     }
+
+	return false;
 }
 
 // Save the best state we've found so far

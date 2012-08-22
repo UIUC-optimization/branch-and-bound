@@ -20,8 +20,11 @@ const double inf = std::numeric_limits<double>::max();
 class State
 {
   public:
+	friend class BTree;
     // Functions
 	State() : 
+		id(0),
+		parID(-1),
 		depth(0), 
 		dominanceClassID(1), 
 		objValue(0.0), 
@@ -44,6 +47,7 @@ class State
 
     // Implemented class functions that can be overridden by subclasses
     virtual void print() const;
+	virtual void writeTulipOutput(FILE* tulipOutputFile) const { return; }
 
     // Implemented class functions that cannot be overridden by subclasses
     int getDepth() const;
@@ -51,7 +55,9 @@ class State
     double getObjValue() const;
     double getLB() const;
     double getUB() const;
-    //double getPriority() const;
+	int getID() const { return id; }
+	int getParentID() const { return parID; }
+	void setID(int i) { id = i; }
     bool isDominated() const;
     bool wasProcessed() const;
 
@@ -59,6 +65,7 @@ class State
 
   protected:
     // Variables
+	int id, parID;
     int depth;
     int dominanceClassID;
     double objValue;
