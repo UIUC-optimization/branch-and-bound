@@ -118,7 +118,7 @@ class BTree
 	void setGlobalLB(double lb) { globalLowerBound = lb; }
 	void setGlobalUB(double ub) { globalUpperBound = ub; }
 	void setStateComputesBounds(bool b) { stateComputesBounds = b; }
-	void setTulipOutputFile(const char* filename);
+	void setTulipOutputFile(const char* filename, const char* instName, long seed, bool deep);
 
 	// Getters
     State* getOptSolution() { return bestState; }

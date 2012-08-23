@@ -59,8 +59,11 @@ BTree::~BTree()
     } 
 	delete tStats;
 	delete bestState;
-	fprintf(tulipOutputFile, ")\n");
-	fclose(tulipOutputFile);
+	if (tulipOutputFile)
+	{
+		fprintf(tulipOutputFile, ")\n");
+		fclose(tulipOutputFile);
+	}
 }
 
 /*****************************************************************************/
@@ -269,18 +272,20 @@ void BTree::resetBest()
 	tStats->timesBestStateWasUpdated = 0;
 }
 
-void BTree::setTulipOutputFile(const char* filename)
+void BTree::setTulipOutputFile(const char* filename, const char* instName, long seed, bool deep) 
 {
 	if (!(tulipOutputFile = fopen(filename, "w")))
 		throw ERROR << "Could not open " << filename << " for writing.";
 
 	fprintf(tulipOutputFile, "(tlp \"2.3\"\n");
+	fprintf(tulipOutputFile, "(comments \"");
+	if (deep) fprintf(tulipOutputFile, "Deep ");
+	else fprintf(tulipOutputFile, "Wide ");
+	fprintf(tulipOutputFile, "branch-and-bound tree for %s; seed %ld.\")\n", instName, seed);
 	fprintf(tulipOutputFile, "(property 0 color \"viewColor\" ");
 	fprintf(tulipOutputFile, "(default \"(0,0,0,255)\" \"(0,0,0,255)\"))\n");
 	fprintf(tulipOutputFile, "(property 0 string \"schedule\" ");
 	fprintf(tulipOutputFile, "(default \"\" \"\"))\n");
-	fprintf(tulipOutputFile, "(property 0 bool \"delayed\" ");
-	fprintf(tulipOutputFile, "(default \"false\" \"false\"))\n");
 	fprintf(tulipOutputFile, "(property 0 string \"viewLabel\" ");
 	fprintf(tulipOutputFile, "(default \"0\" \"0\"))\n");
 	fprintf(tulipOutputFile, "(property 0 color \"viewLabelColor\" ");
