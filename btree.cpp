@@ -274,6 +274,7 @@ void BTree::resetBest()
 
 void BTree::setTulipOutputFile(const char* filename, const char* instName, long seed, bool deep) 
 {
+	if (!filename) return;
 	if (!(tulipOutputFile = fopen(filename, "w")))
 		throw ERROR << "Could not open " << filename << " for writing.";
 
