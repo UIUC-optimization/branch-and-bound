@@ -121,6 +121,12 @@ void BTree::exploreNextState()
 {
     State* ns = getNextState();
 
+	if (ns->timeToExplore > tStats->statesExplored)
+	{
+		saveStateForExploration(ns);
+		return;
+	}
+
 	if (tulipOutputFile)
 	{
 		fprintf(tulipOutputFile, "(property 0 string \"viewLabel\" ");
@@ -167,9 +173,9 @@ void BTree::exploreNextState()
 /*****************************************************************************/
 void BTree::processState(State* s, bool isRoot)
 {
+	s->id = nextNodeID++;
 	if (tulipOutputFile)
 	{
-		s->id = nextNodeID++;
 		fprintf(tulipOutputFile, "(nodes %d)\n", s->id);
 		if (s->parID != -1) 
 			fprintf(tulipOutputFile, "(edge %d %d %d)\n", nextEdgeID++, s->id, s->parID);

@@ -26,6 +26,7 @@ class State
 		id(0),
 		parID(-1),
 		depth(0), 
+		timeToExplore(0),
 		dominanceClassID(1), 
 		objValue(0.0), 
         lowerBound(-inf), 
@@ -67,6 +68,7 @@ class State
     // Variables
 	int id, parID;
     int depth;
+	int timeToExplore;
     int dominanceClassID;
     double objValue;
     double lowerBound;

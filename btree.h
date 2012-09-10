@@ -125,6 +125,7 @@ class BTree
 	double getGlobalLB() { return globalLowerBound; }
 	double getGlobalUB() { return globalUpperBound; }
 	const char* getName() { return name.c_str(); }
+	int getNumExploredStates() { return tStats->statesExplored; }
 
     // Public printing functions
     void printOptSolution() const;
