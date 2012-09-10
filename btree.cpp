@@ -171,7 +171,7 @@ void BTree::exploreNextState()
 /*****************************************************************************/
 /* BTree state processing functions                                          */
 /*****************************************************************************/
-void BTree::processState(State* s, bool isRoot)
+bool BTree::processState(State* s, bool isRoot)
 {
 	s->id = nextNodeID++;
 	if (tulipOutputFile)
@@ -192,7 +192,7 @@ void BTree::processState(State* s, bool isRoot)
 	{
         processTerminalState(s);
 		if (isRoot) printf("root is terminal!\n");
-        return;
+        return true;
     } 
 
 	if (saveNonTerm) saveBestState(s, true);
@@ -205,7 +205,7 @@ void BTree::processState(State* s, bool isRoot)
 		{
             ++tStats->statesPrunedByDomBeforeInsertion;
             delete s;
-            return;
+            return false;
         } 
     }
 
@@ -217,7 +217,7 @@ void BTree::processState(State* s, bool isRoot)
 	{
         ++tStats->statesPrunedByBoundsBeforeInsertion;
         delete s;
-        return;
+        return false;
     } 
 	
 	else if (isRoot) 
@@ -232,7 +232,7 @@ void BTree::processState(State* s, bool isRoot)
 			(fabs(globalLowerBound - globalUpperBound) < eps))
 		{
 			delete s;
-			return;
+			return false;
 		}
     }
 
@@ -256,7 +256,7 @@ void BTree::processState(State* s, bool isRoot)
     ++tStats->statesStoredInTree;
     saveStateForExploration(s);
 
-    return;
+    return true;
 }
 
 void BTree::processHeuristicState(State *s)

@@ -98,7 +98,10 @@ class BTree
 
     // Exploring functions
     void explore();
-    void processState(State *s, bool isRoot = false);
+
+	// Returns true if terminal or inserted into tree.  Returns false if pruned by dominance
+	// or bounds.  I'm not sure if this is the best behaviour or not.  TODO
+    bool processState(State *s, bool isRoot = false);
     void processHeuristicState(State *s);
     bool attemptHeuristicCompletion(State *s);
 	void resetBest();
