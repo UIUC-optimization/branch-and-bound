@@ -45,12 +45,19 @@ all: btree btree_d
 debug: btree_d
 
 btree: $(OBJS)
+	ar rvs libbbTree.a $(OBJS)
 	@echo "Done."
 
 btree_d: $(DOBJS)
+	ar rvs libbbTree_d.a $(DOBJS)
 	@echo "Done."
 
 clean:
 	-rm $(OBJDIR)/*.d $(OBJDIR)/*.debug $(OBJDIR)/*.o;
+
+install: btree btree_d
+	cp libbbTree.a libbbTree_d.a /usr/local/lib64/bbCode/.
+	cp *.h /usr/local/include/bbCode/.
+	
 
 include $(addprefix $(OBJDIR)/,$(SRCS:.cpp=.d))

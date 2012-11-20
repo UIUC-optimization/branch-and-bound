@@ -291,7 +291,7 @@ void BTree::setTulipOutputFile(const char* filename, const char* instName, long 
 	fprintf(tulipOutputFile, "branch-and-bound tree for %s; seed %ld.\")\n", instName, seed);
 	fprintf(tulipOutputFile, "(property 0 color \"viewColor\" ");
 	fprintf(tulipOutputFile, "(default \"(0,0,0,255)\" \"(0,0,0,255)\"))\n");
-	fprintf(tulipOutputFile, "(property 0 string \"schedule\" ");
+	fprintf(tulipOutputFile, "(property 0 string \"indset\" ");
 	fprintf(tulipOutputFile, "(default \"\" \"\"))\n");
 	fprintf(tulipOutputFile, "(property 0 string \"viewLabel\" ");
 	fprintf(tulipOutputFile, "(default \"0\" \"0\"))\n");
