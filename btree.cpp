@@ -97,9 +97,6 @@ void BTree::explore()
 			 (globalLowerBound < globalUpperBound));
     }
 
-	if (globalLowerBound == globalUpperBound)
-		printf("Bounds are equal; terminating.\n");
-
     if (debug > 0) {
         printf("* Finished *\n");
         if ((globalLowerBound < globalUpperBound) && (!isEmpty() || !finished)) {

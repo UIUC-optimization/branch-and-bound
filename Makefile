@@ -12,7 +12,7 @@ LDFLAGS =
 # You can leave this stuff alone for the most part; it sets the right C++ standard, tells the
 # compiler to print output nicely, and prints some useful warning messages
 
-CC = colorg++ 
+CC = g++ 
 STD = -std=c++0x
 FORMAT = -fmessage-length=100 -fno-pretty-templates
 WARNINGS = -Wempty-body -Wall -Wno-sign-compare
