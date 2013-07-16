@@ -288,8 +288,6 @@ void BTree::setTulipOutputFile(const char* filename, const char* instName, long 
 	fprintf(tulipOutputFile, "branch-and-bound tree for %s; seed %ld.\")\n", instName, seed);
 	fprintf(tulipOutputFile, "(property 0 color \"viewColor\" ");
 	fprintf(tulipOutputFile, "(default \"(0,0,0,255)\" \"(0,0,0,255)\"))\n");
-	fprintf(tulipOutputFile, "(property 0 string \"indset\" ");
-	fprintf(tulipOutputFile, "(default \"\" \"\"))\n");
 	fprintf(tulipOutputFile, "(property 0 string \"viewLabel\" ");
 	fprintf(tulipOutputFile, "(default \"0\" \"0\"))\n");
 	fprintf(tulipOutputFile, "(property 0 color \"viewLabelColor\" ");
@@ -593,31 +591,62 @@ void TreeStats::print() const
             statesStoredInTreeAtLastUpdate - statesExploredAtLastUpdate, 
             statesStoredInTreeAtLastUpdate, statesExploredAtLastUpdate);
 
+    
     if (numIdentifiedAtLevel.size() > 0)
     {
         printf("Identified states at level:\n");
         printf("{%d", numIdentifiedAtLevel[0]);
+        int zeroCount = 0;
         for (int i = 1; i < numIdentifiedAtLevel.size(); ++i)
-            printf(", %d", numIdentifiedAtLevel[i]);
+        {
+            if (numIdentifiedAtLevel[i] == 0) { ++zeroCount; continue; }
+            else
+            {
+                if (zeroCount > 0)
+                    printf(", <%d empty levels>", zeroCount);
+                zeroCount = 0;
+                printf(", %d", numIdentifiedAtLevel[i]);
+            }
+        }
         printf("};\n");
     }
     if (numExploredAtLevel.size() > 0)
     {
         printf("Explored states at level:\n");
         printf("{%d", numExploredAtLevel[0]);
+        int zeroCount = 0;
         for (int i = 1; i < numExploredAtLevel.size(); ++i)
-            printf(", %d", numExploredAtLevel[i]);
+        {
+            if (numExploredAtLevel[i] == 0) { ++zeroCount; continue; }
+            else
+            {
+                if (zeroCount > 0)
+                    printf(", <%d empty levels>", zeroCount);
+                zeroCount = 0;
+                printf(", %d", numExploredAtLevel[i]);
+            }
+        }
         printf("};\n");
     }
     if (numStoredAtLevel.size() > 0)
     {
         printf("Stored states at level:\n");
         printf("{%d", numStoredAtLevel[0]);
+        int zeroCount = 0;
         for (int i = 1; i < numStoredAtLevel.size(); ++i)
-            printf(", %d", numStoredAtLevel[i]);
+        {
+            if (numStoredAtLevel[i] == 0) { ++zeroCount; continue; }
+            else
+            {
+                if (zeroCount > 0)
+					printf(", <%d empty levels>", zeroCount);
+                zeroCount = 0;
+                printf(", %d", numStoredAtLevel[i]);
+            }
+        }
         printf("};\n");
     }
     printf("\n");
-    return;
+	return;
 }
 
