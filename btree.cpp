@@ -507,7 +507,7 @@ void BTree::printProgress(bool newIncumbent) const
         printf("  ");
     }
     printf("Explored %10d/%d states: ", tStats->statesExplored, 
-                                        tStats->statesIdentified);
+                                        tStats->statesStoredInTree);
     if (globalLowerBound > -std::numeric_limits<double>::max()) {
         printf("< %10.2f ", globalLowerBound);
     } else {
